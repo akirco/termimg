@@ -11,6 +11,8 @@ export interface RenderOptions {
     rows?: number;
     protocol?: ImageProtocol | 'auto';
     preserveAspectRatio?: boolean;
+    x?: number;
+    y?: number;
 }
 export declare const PROTOCOL_PRIORITY: ImageProtocol[];
 export declare const IMAGE_EXTENSIONS: Set<string>;

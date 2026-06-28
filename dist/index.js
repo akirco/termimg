@@ -21890,7 +21890,7 @@ var require_any_base = __commonJS((exports, module) => {
 var RAMP = " .:-=+*#%@";
 
 class AsciiEncoder {
-  encode(width, height, data) {
+  encode(width, height, data, x = 0, y = 0) {
     if (width === 0 || height === 0 || data.length === 0)
       return "";
     const lines = [];
@@ -21908,14 +21908,14 @@ class AsciiEncoder {
         parts.push(`\x1B[48;2;${r};${g};${b}m\x1B[${fg}m${ch}`);
       }
       parts.push("\x1B[0m");
-      lines.push(parts.join(""));
+      lines.push(`\x1B[${y + row + 1};${x + 1}H${parts.join("")}`);
     }
     return lines.join("");
   }
 }
 // src/encoders/braille.ts
 class BrailleEncoder {
-  encode(width, height, data) {
+  encode(width, height, data, x = 0, y = 0) {
     if (width === 0 || height === 0 || data.length === 0)
       return "";
     const lines = [];
@@ -21949,14 +21949,14 @@ class BrailleEncoder {
         }
       }
       parts.push("\x1B[0m");
-      lines.push(parts.join(""));
+      lines.push(`\x1B[${y + row / 4 + 1};${x + 1}H${parts.join("")}`);
     }
     return lines.join("");
   }
 }
 // src/encoders/halfblock.ts
 class HalfBlockEncoder {
-  encode(width, height, data) {
+  encode(width, height, data, x = 0, y = 0) {
     if (width === 0 || height === 0 || data.length === 0)
       return "";
     const outputH = Math.ceil(height / 2);
@@ -21980,7 +21980,9 @@ class HalfBlockEncoder {
         }
       }
       parts.push("\x1B[0m");
-      lines.push(parts.join(""));
+      const shiftedCol = x + 1;
+      const shiftedRow = y + row + 1;
+      lines.push(`\x1B[${shiftedRow};${shiftedCol}H${parts.join("")}`);
     }
     return lines.join("");
   }
@@ -21988,7 +21990,7 @@ class HalfBlockEncoder {
 // src/encoders/kitty.ts
 class KittyEncoder {
   frameId = 0;
-  encode(width, height, data) {
+  encode(width, height, data, x = 0, y = 0) {
     if (width === 0 || height === 0 || data.length === 0)
       return "";
     this.frameId++;
@@ -22003,6 +22005,8 @@ class KittyEncoder {
       rgb[di + 2] = data[si + 2];
     }
     const parts = [];
+    const prefix = `\x1B[${y + 1};${x + 1}H`;
+    parts.push(prefix);
     const b64 = Buffer.from(rgb).toString("base64");
     const chunkSize = 16384;
     const totalChunks = Math.ceil(b64.length / chunkSize);
@@ -22240,10 +22244,16 @@ function introducer(backgroundSelect = 0) {
 
 // src/encoders/sixel.ts
 class SixelEncoder {
-  encode(width, height, data) {
-    return image2sixel(data, width, height, 256);
+  encode(width, height, data, x = 0, y = 0) {
+    const img = image2sixel(data, width, height, 256);
+    if (!img)
+      return "";
+    return `\x1B[${y + 1};${x + 1}H${img}`;
   }
 }
+// src/image.ts
+import { extname } from "node:path";
+
 // node_modules/.bun/bmp-ts@1.0.9/node_modules/bmp-ts/dist/esm/header-types.js
 var HeaderTypes;
 (function(HeaderTypes2) {
@@ -33980,7 +33990,11 @@ var Jimp = createJimp({
 });
 
 // src/types.ts
-var PROTOCOL_PRIORITY = ["kitty", "sixel", "halfblock"];
+var PROTOCOL_PRIORITY = [
+  "kitty",
+  "sixel",
+  "halfblock"
+];
 var IMAGE_EXTENSIONS = new Set([
   "jpg",
   "jpeg",
@@ -34002,7 +34016,6 @@ var IMAGE_EXTENSIONS = new Set([
 ]);
 
 // src/image.ts
-import { extname } from "node:path";
 async function loadImage(source) {
   const input = typeof source === "string" ? source : Buffer.from(source);
   const image2 = await Jimp.read(input);
@@ -34151,7 +34164,6 @@ function initCellSize() {
     return cellSize();
   });
 }
-initCellSize();
 function cellSize() {
   return _cellSize ?? { cw: DEFAULT_CELL_W, ch: DEFAULT_CELL_H };
 }
@@ -34295,7 +34307,9 @@ async function renderImage(source, options = {}) {
   const { targetW, targetH } = fitDimensions(image2.width, image2.height, protocol, options);
   const resized = targetW !== image2.width || targetH !== image2.height ? await resizeImage(image2, targetW, targetH) : image2;
   const encoder = createEncoder(protocol);
-  return encoder.encode(targetW, targetH, resized.data);
+  const x2 = options.x ?? 0;
+  const y2 = options.y ?? 0;
+  return encoder.encode(targetW, targetH, resized.data, x2, y2);
 }
 export {
   resizeImage,
