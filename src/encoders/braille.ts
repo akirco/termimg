@@ -1,5 +1,11 @@
 export class BrailleEncoder {
-  encode(width: number, height: number, data: Uint8Array): string {
+  encode(
+    width: number,
+    height: number,
+    data: Uint8Array,
+    x = 0,
+    y = 0,
+  ): string {
     if (width === 0 || height === 0 || data.length === 0) return '';
 
     const lines: string[] = [];
@@ -36,7 +42,7 @@ export class BrailleEncoder {
       }
 
       parts.push('\x1b[0m');
-      lines.push(parts.join(''));
+      lines.push(`\x1b[${y + row / 4 + 1};${x + 1}H${parts.join('')}`);
     }
 
     return lines.join('');

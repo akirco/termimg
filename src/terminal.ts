@@ -23,7 +23,6 @@ function initCellSize(): void {
     return cellSize();
   });
 }
-initCellSize();
 
 function cellSize(): { cw: number; ch: number } {
   return _cellSize ?? { cw: DEFAULT_CELL_W, ch: DEFAULT_CELL_H };

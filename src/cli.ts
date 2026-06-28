@@ -12,6 +12,8 @@ Options:
   --cols <n>        Fixed width in character columns
   --rows <n>        Fixed height in character rows
   --protocol <p>    Force protocol: kitty, sixel, halfblock, braille, ascii, auto
+  --x <n>           Horizontal offset in character cells (default: 0)
+  --y <n>           Vertical offset in character cells (default: 0)
   --no-aspect       Do not preserve aspect ratio`);
     process.exit(0);
   }
@@ -28,6 +30,8 @@ Options:
   let rows: number | undefined;
   let protocol: string | undefined;
   let preserveAspectRatio = true;
+  let x = 0;
+  let y = 0;
 
   for (let i = 1; i < args.length; i++) {
     switch (args[i]) {
@@ -43,6 +47,12 @@ Options:
       case '--protocol':
         protocol = args[++i];
         break;
+      case '--x':
+        x = parseInt(args[++i]!, 10);
+        break;
+      case '--y':
+        y = parseInt(args[++i]!, 10);
+        break;
       case '--no-aspect':
         preserveAspectRatio = false;
         break;
@@ -56,6 +66,8 @@ Options:
       rows,
       protocol: protocol as any,
       preserveAspectRatio,
+      x: x || undefined,
+      y: y || undefined,
     });
     process.stdout.write(output);
   } catch (err: any) {

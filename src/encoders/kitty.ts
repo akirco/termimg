@@ -1,7 +1,13 @@
 export class KittyEncoder {
   private frameId = 0;
 
-  encode(width: number, height: number, data: Uint8Array): string {
+  encode(
+    width: number,
+    height: number,
+    data: Uint8Array,
+    x = 0,
+    y = 0,
+  ): string {
     if (width === 0 || height === 0 || data.length === 0) return '';
 
     this.frameId++;
@@ -18,6 +24,8 @@ export class KittyEncoder {
     }
 
     const parts: string[] = [];
+    const prefix = `\x1b[${y + 1};${x + 1}H`;
+    parts.push(prefix);
 
     const b64 = Buffer.from(rgb).toString('base64');
     const chunkSize = 16384;

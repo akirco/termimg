@@ -46,6 +46,8 @@ export async function renderImage(
       : image;
 
   const encoder = createEncoder(protocol);
+  const x = options.x ?? 0;
+  const y = options.y ?? 0;
 
-  return encoder.encode(targetW, targetH, resized.data);
+  return encoder.encode(targetW, targetH, resized.data, x, y);
 }

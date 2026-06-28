@@ -1,5 +1,11 @@
 export class HalfBlockEncoder {
-  encode(width: number, height: number, data: Uint8Array): string {
+  encode(
+    width: number,
+    height: number,
+    data: Uint8Array,
+    x = 0,
+    y = 0,
+  ): string {
     if (width === 0 || height === 0 || data.length === 0) return '';
 
     const outputH = Math.ceil(height / 2);
@@ -29,7 +35,9 @@ export class HalfBlockEncoder {
       }
 
       parts.push('\x1b[0m');
-      lines.push(parts.join(''));
+      const shiftedCol = x + 1;
+      const shiftedRow = y + row + 1;
+      lines.push(`\x1b[${shiftedRow};${shiftedCol}H${parts.join('')}`);
     }
 
     return lines.join('');
