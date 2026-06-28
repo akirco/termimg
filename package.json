@@ -1,0 +1,30 @@
+{
+  "name": "termimg",
+  "version": "0.1.0",
+  "description": "Terminal image preview library — Kitty, Sixel, HalfBlock, Braille, ASCII",
+  "module": "src/index.ts",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "type": "module",
+  "bin": {
+    "termimg": "src/cli.ts"
+  },
+  "scripts": {
+    "build": "bun build src/index.ts --format esm --outdir dist --target node && tsc -p tsconfig.build.json",
+    "build:cli": "bun build src/cli.ts --compile --outfile termimg --target bun",
+    "prepublishOnly": "bun run build",
+    "format": "bunx biome check --write"
+  },
+  "files": [
+    "dist/"
+  ],
+  "devDependencies": {
+    "@types/bun": "latest"
+  },
+  "peerDependencies": {
+    "typescript": "^6.0.3"
+  },
+  "dependencies": {
+    "jimp": "^1.6.1"
+  }
+}
