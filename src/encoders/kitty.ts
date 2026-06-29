@@ -5,8 +5,8 @@ export class KittyEncoder {
     width: number,
     height: number,
     data: Uint8Array,
-    x = 0,
-    y = 0,
+    x?: number,
+    y?: number,
   ): string {
     if (width === 0 || height === 0 || data.length === 0) return '';
 
@@ -24,8 +24,12 @@ export class KittyEncoder {
     }
 
     const parts: string[] = [];
-    const prefix = `\x1b[${y + 1};${x + 1}H`;
-    parts.push(prefix);
+    const hasOffset = x !== undefined || y !== undefined;
+    if (hasOffset) {
+      const displayRow = y !== undefined ? y + 1 : 1;
+      const displayCol = x !== undefined ? x + 1 : 1;
+      parts.push(`\x1b[${displayRow};${displayCol}H`);
+    }
 
     const b64 = Buffer.from(rgb).toString('base64');
     const chunkSize = 16384;
@@ -43,6 +47,10 @@ export class KittyEncoder {
       } else {
         parts.push(`\x1b_Gm=${m};${chunk}\x1b\\`);
       }
+    }
+
+    if (!hasOffset) {
+      parts.push('\r\n');
     }
 
     return parts.join('');

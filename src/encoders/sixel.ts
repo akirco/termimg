@@ -1,15 +1,20 @@
-import { image2sixel } from '../sixel.ts';
+import { image2sixel } from "../sixel.ts";
 
 export class SixelEncoder {
   encode(
     width: number,
     height: number,
     data: Uint8Array,
-    x = 0,
-    y = 0,
+    x?: number,
+    y?: number,
   ): string {
     const img = image2sixel(data, width, height, 256);
-    if (!img) return '';
-    return `\x1b[${y + 1};${x + 1}H${img}`;
+    if (x !== undefined || y !== undefined) {
+      if (!img) return "";
+      const offsetY = y !== undefined ? y + 1 : 1;
+      const offsetX = x !== undefined ? x + 1 : 1;
+      return `\x1b[${offsetY};${offsetX}H${img}`;
+    }
+    return img;
   }
 }

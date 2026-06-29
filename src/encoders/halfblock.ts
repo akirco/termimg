@@ -3,11 +3,12 @@ export class HalfBlockEncoder {
     width: number,
     height: number,
     data: Uint8Array,
-    x = 0,
-    y = 0,
+    x?: number,
+    y?: number,
   ): string {
     if (width === 0 || height === 0 || data.length === 0) return '';
 
+    const hasOffset = x !== undefined || y !== undefined;
     const outputH = Math.ceil(height / 2);
     const lines: string[] = [];
 
@@ -35,11 +36,15 @@ export class HalfBlockEncoder {
       }
 
       parts.push('\x1b[0m');
-      const shiftedCol = x + 1;
-      const shiftedRow = y + row + 1;
-      lines.push(`\x1b[${shiftedRow};${shiftedCol}H${parts.join('')}`);
+      if (hasOffset) {
+        const displayRow = y !== undefined ? y + row + 1 : row + 1;
+        const displayCol = x !== undefined ? x + 1 : 1;
+        lines.push(`\x1b[${displayRow};${displayCol}H${parts.join('')}`);
+      } else {
+        lines.push(parts.join(''));
+      }
     }
 
-    return lines.join('');
+    return hasOffset ? lines.join('') : lines.join('\r\n');
   }
 }

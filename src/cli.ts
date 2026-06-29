@@ -30,8 +30,8 @@ Options:
   let rows: number | undefined;
   let protocol: string | undefined;
   let preserveAspectRatio = true;
-  let x = 0;
-  let y = 0;
+  let x: number | undefined;
+  let y: number | undefined;
 
   for (let i = 1; i < args.length; i++) {
     switch (args[i]) {
@@ -66,8 +66,8 @@ Options:
       rows,
       protocol: protocol as any,
       preserveAspectRatio,
-      x: x || undefined,
-      y: y || undefined,
+      x,
+      y,
     });
     process.stdout.write(result.stream);
   } catch (err: any) {

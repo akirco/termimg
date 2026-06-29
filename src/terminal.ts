@@ -1,4 +1,4 @@
-import type { ImageProtocol } from './types.ts';
+import type { ImageProtocol } from "./types.ts";
 
 const DEFAULT_CELL_W = 9;
 const DEFAULT_CELL_H = 18;
@@ -52,12 +52,13 @@ function queryCellSizeEscape(): Promise<{ cw: number; ch: number } | null> {
           stdin.setRawMode(false);
         }
       } catch {}
-      stdin.removeListener('data', onData);
+      stdin.pause();
+      stdin.removeListener("data", onData);
     }
 
     function onData(data: Buffer) {
       cleanup();
-      const m = String(data).match(new RegExp('\\x1b\\[6;(\\d+);(\\d+)t'));
+      const m = String(data).match(new RegExp("\\x1b\\[6;(\\d+);(\\d+)t"));
       if (m) {
         resolve({ cw: Number(m[2]), ch: Number(m[1]) });
       } else {
@@ -70,8 +71,9 @@ function queryCellSizeEscape(): Promise<{ cw: number; ch: number } | null> {
         stdin.setRawMode(true);
         restoreRaw = true;
       }
-      stdin.once('data', onData);
-      process.stdout.write('\x1b[16t');
+      stdin.resume();
+      stdin.once("data", onData);
+      process.stdout.write("\x1b[16t");
     } catch {
       cleanup();
       resolve(null);
@@ -102,15 +104,15 @@ export function fitDimensions(
   let pxPerCol: number;
   let pxPerRow: number;
   switch (protocol) {
-    case 'halfblock':
+    case "halfblock":
       pxPerCol = 1;
       pxPerRow = 2;
       break;
-    case 'braille':
+    case "braille":
       pxPerCol = 2;
       pxPerRow = 4;
       break;
-    case 'ascii':
+    case "ascii":
       pxPerCol = 1;
       pxPerRow = 1;
       break;
@@ -167,9 +169,9 @@ export function fitDimensions(
 
 function alignHeight(h: number, protocol: ImageProtocol): number {
   switch (protocol) {
-    case 'halfblock':
+    case "halfblock":
       return Math.floor(h / 2) * 2;
-    case 'braille':
+    case "braille":
       return Math.floor(h / 4) * 4;
     default:
       return h;

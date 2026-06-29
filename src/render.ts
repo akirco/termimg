@@ -52,11 +52,9 @@ export async function renderImage(
       : image;
 
   const encoder = createEncoder(protocol);
-  const x = options.x ?? 0;
-  const y = options.y ?? 0;
 
   return {
-    stream: encoder.encode(targetW, targetH, resized.data, x, y),
+    stream: encoder.encode(targetW, targetH, resized.data, options.x, options.y),
     cols: targetW,
     rows: targetH,
   };

@@ -3,11 +3,12 @@ export class BrailleEncoder {
     width: number,
     height: number,
     data: Uint8Array,
-    x = 0,
-    y = 0,
+    x?: number,
+    y?: number,
   ): string {
     if (width === 0 || height === 0 || data.length === 0) return '';
 
+    const hasOffset = x !== undefined || y !== undefined;
     const lines: string[] = [];
 
     for (let row = 0; row < height; row += 4) {
@@ -42,9 +43,15 @@ export class BrailleEncoder {
       }
 
       parts.push('\x1b[0m');
-      lines.push(`\x1b[${y + row / 4 + 1};${x + 1}H${parts.join('')}`);
+      if (hasOffset) {
+        const displayRow = y !== undefined ? y + row / 4 + 1 : row / 4 + 1;
+        const displayCol = x !== undefined ? x + 1 : 1;
+        lines.push(`\x1b[${displayRow};${displayCol}H${parts.join('')}`);
+      } else {
+        lines.push(parts.join(''));
+      }
     }
 
-    return lines.join('');
+    return hasOffset ? lines.join('') : lines.join('\r\n');
   }
 }
