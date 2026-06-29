@@ -5,7 +5,7 @@ export { KittyEncoder } from './encoders/kitty.ts';
 export { SixelEncoder } from './encoders/sixel.ts';
 export { isImageExtension, loadImage, resizeImage } from './image.ts';
 export { detectProtocol } from './protocol.ts';
-export { renderImage } from './render.ts';
+export { renderImage, type RenderResult } from './render.ts';
 export { ensureCellSize, type FitResult, fitDimensions } from './terminal.ts';
 export type {
   ImageData,

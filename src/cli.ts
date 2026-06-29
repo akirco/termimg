@@ -60,7 +60,7 @@ Options:
   }
 
   try {
-    const output = await renderImage(path, {
+    const result = await renderImage(path, {
       scale,
       cols,
       rows,
@@ -69,7 +69,7 @@ Options:
       x: x || undefined,
       y: y || undefined,
     });
-    process.stdout.write(output);
+    process.stdout.write(result.stream);
   } catch (err: any) {
     console.error(`Error: ${err.message}`);
     process.exit(1);

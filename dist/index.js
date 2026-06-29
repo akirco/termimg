@@ -34182,15 +34182,14 @@ function queryCellSizeEscape() {
       resolve(null);
     }, 200);
     const stdin = process.stdin;
-    let didSetRaw = false;
+    let restoreRaw = false;
     function cleanup() {
       clearTimeout(timeout);
       try {
-        if (didSetRaw) {
+        if (restoreRaw) {
           stdin.setRawMode(false);
         }
       } catch {}
-      stdin.pause();
       stdin.removeListener("data", onData);
     }
     function onData(data) {
@@ -34205,9 +34204,8 @@ function queryCellSizeEscape() {
     try {
       if (!stdin.isRaw) {
         stdin.setRawMode(true);
-        didSetRaw = true;
+        restoreRaw = true;
       }
-      stdin.resume();
       stdin.once("data", onData);
       process.stdout.write("\x1B[16t");
     } catch {
@@ -34315,7 +34313,11 @@ async function renderImage(source, options = {}) {
   const encoder = createEncoder(protocol);
   const x2 = options.x ?? 0;
   const y2 = options.y ?? 0;
-  return encoder.encode(targetW, targetH, resized.data, x2, y2);
+  return {
+    stream: encoder.encode(targetW, targetH, resized.data, x2, y2),
+    cols: targetW,
+    rows: targetH
+  };
 }
 export {
   resizeImage,

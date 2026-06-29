@@ -8,6 +8,12 @@ import { detectProtocol } from './protocol.ts';
 import { ensureCellSize, fitDimensions } from './terminal.ts';
 import type { ImageProtocol, ImageSource, RenderOptions } from './types.ts';
 
+export interface RenderResult {
+  stream: string;
+  cols: number;
+  rows: number;
+}
+
 function createEncoder(protocol: ImageProtocol) {
   switch (protocol) {
     case 'kitty':
@@ -26,7 +32,7 @@ function createEncoder(protocol: ImageProtocol) {
 export async function renderImage(
   source: ImageSource,
   options: RenderOptions = {},
-): Promise<string> {
+): Promise<RenderResult> {
   const protocol = detectProtocol(options.protocol);
 
   const image = await loadImage(source);
@@ -49,5 +55,9 @@ export async function renderImage(
   const x = options.x ?? 0;
   const y = options.y ?? 0;
 
-  return encoder.encode(targetW, targetH, resized.data, x, y);
+  return {
+    stream: encoder.encode(targetW, targetH, resized.data, x, y),
+    cols: targetW,
+    rows: targetH,
+  };
 }
