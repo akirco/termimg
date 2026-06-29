@@ -21890,9 +21890,10 @@ var require_any_base = __commonJS((exports, module) => {
 var RAMP = " .:-=+*#%@";
 
 class AsciiEncoder {
-  encode(width, height, data, x = 0, y = 0) {
+  encode(width, height, data, x, y) {
     if (width === 0 || height === 0 || data.length === 0)
       return "";
+    const hasOffset = x !== undefined || y !== undefined;
     const lines = [];
     for (let row = 0;row < height; row++) {
       const parts = [];
@@ -21908,16 +21909,24 @@ class AsciiEncoder {
         parts.push(`\x1B[48;2;${r};${g};${b}m\x1B[${fg}m${ch}`);
       }
       parts.push("\x1B[0m");
-      lines.push(`\x1B[${y + row + 1};${x + 1}H${parts.join("")}`);
+      if (hasOffset) {
+        const displayRow = y !== undefined ? y + row + 1 : row + 1;
+        const displayCol = x !== undefined ? x + 1 : 1;
+        lines.push(`\x1B[${displayRow};${displayCol}H${parts.join("")}`);
+      } else {
+        lines.push(parts.join(""));
+      }
     }
-    return lines.join("");
+    return hasOffset ? lines.join("") : lines.join(`
+`);
   }
 }
 // src/encoders/braille.ts
 class BrailleEncoder {
-  encode(width, height, data, x = 0, y = 0) {
+  encode(width, height, data, x, y) {
     if (width === 0 || height === 0 || data.length === 0)
       return "";
+    const hasOffset = x !== undefined || y !== undefined;
     const lines = [];
     for (let row = 0;row < height; row += 4) {
       const parts = [];
@@ -21949,16 +21958,24 @@ class BrailleEncoder {
         }
       }
       parts.push("\x1B[0m");
-      lines.push(`\x1B[${y + row / 4 + 1};${x + 1}H${parts.join("")}`);
+      if (hasOffset) {
+        const displayRow = y !== undefined ? y + row / 4 + 1 : row / 4 + 1;
+        const displayCol = x !== undefined ? x + 1 : 1;
+        lines.push(`\x1B[${displayRow};${displayCol}H${parts.join("")}`);
+      } else {
+        lines.push(parts.join(""));
+      }
     }
-    return lines.join("");
+    return hasOffset ? lines.join("") : lines.join(`
+`);
   }
 }
 // src/encoders/halfblock.ts
 class HalfBlockEncoder {
-  encode(width, height, data, x = 0, y = 0) {
+  encode(width, height, data, x, y) {
     if (width === 0 || height === 0 || data.length === 0)
       return "";
+    const hasOffset = x !== undefined || y !== undefined;
     const outputH = Math.ceil(height / 2);
     const lines = [];
     for (let row = 0;row < outputH; row++) {
@@ -21980,17 +21997,22 @@ class HalfBlockEncoder {
         }
       }
       parts.push("\x1B[0m");
-      const shiftedCol = x + 1;
-      const shiftedRow = y + row + 1;
-      lines.push(`\x1B[${shiftedRow};${shiftedCol}H${parts.join("")}`);
+      if (hasOffset) {
+        const displayRow = y !== undefined ? y + row + 1 : row + 1;
+        const displayCol = x !== undefined ? x + 1 : 1;
+        lines.push(`\x1B[${displayRow};${displayCol}H${parts.join("")}`);
+      } else {
+        lines.push(parts.join(""));
+      }
     }
-    return lines.join("");
+    return hasOffset ? lines.join("") : lines.join(`
+`);
   }
 }
 // src/encoders/kitty.ts
 class KittyEncoder {
   frameId = 0;
-  encode(width, height, data, x = 0, y = 0) {
+  encode(width, height, data, x, y) {
     if (width === 0 || height === 0 || data.length === 0)
       return "";
     this.frameId++;
@@ -22005,8 +22027,12 @@ class KittyEncoder {
       rgb[di + 2] = data[si + 2];
     }
     const parts = [];
-    const prefix = `\x1B[${y + 1};${x + 1}H`;
-    parts.push(prefix);
+    const hasOffset = x !== undefined || y !== undefined;
+    if (hasOffset) {
+      const displayRow = y !== undefined ? y + 1 : 1;
+      const displayCol = x !== undefined ? x + 1 : 1;
+      parts.push(`\x1B[${displayRow};${displayCol}H`);
+    }
     const b64 = Buffer.from(rgb).toString("base64");
     const chunkSize = 16384;
     const totalChunks = Math.ceil(b64.length / chunkSize);
@@ -22019,6 +22045,10 @@ class KittyEncoder {
       } else {
         parts.push(`\x1B_Gm=${m};${chunk}\x1B\\`);
       }
+    }
+    if (!hasOffset) {
+      parts.push(`
+`);
     }
     return parts.join("");
   }
@@ -22244,11 +22274,16 @@ function introducer(backgroundSelect = 0) {
 
 // src/encoders/sixel.ts
 class SixelEncoder {
-  encode(width, height, data, x = 0, y = 0) {
+  encode(width, height, data, x, y) {
     const img = image2sixel(data, width, height, 256);
-    if (!img)
-      return "";
-    return `\x1B[${y + 1};${x + 1}H${img}`;
+    if (x !== undefined || y !== undefined) {
+      if (!img)
+        return "";
+      const offsetY = y !== undefined ? y + 1 : 1;
+      const offsetX = x !== undefined ? x + 1 : 1;
+      return `\x1B[${offsetY};${offsetX}H${img}`;
+    }
+    return img;
   }
 }
 // src/image.ts
@@ -34183,6 +34218,7 @@ function queryCellSizeEscape() {
     }, 200);
     const stdin = process.stdin;
     let restoreRaw = false;
+    let resumeOwn = false;
     function cleanup() {
       clearTimeout(timeout);
       try {
@@ -34190,6 +34226,9 @@ function queryCellSizeEscape() {
           stdin.setRawMode(false);
         }
       } catch {}
+      if (resumeOwn) {
+        stdin.pause();
+      }
       stdin.removeListener("data", onData);
     }
     function onData(data) {
@@ -34205,6 +34244,10 @@ function queryCellSizeEscape() {
       if (!stdin.isRaw) {
         stdin.setRawMode(true);
         restoreRaw = true;
+      }
+      if (stdin.isPaused()) {
+        stdin.resume();
+        resumeOwn = true;
       }
       stdin.once("data", onData);
       process.stdout.write("\x1B[16t");
@@ -34311,10 +34354,8 @@ async function renderImage(source, options = {}) {
   const { targetW, targetH } = fitDimensions(image2.width, image2.height, protocol, options);
   const resized = targetW !== image2.width || targetH !== image2.height ? await resizeImage(image2, targetW, targetH) : image2;
   const encoder = createEncoder(protocol);
-  const x2 = options.x ?? 0;
-  const y2 = options.y ?? 0;
   return {
-    stream: encoder.encode(targetW, targetH, resized.data, x2, y2),
+    stream: encoder.encode(targetW, targetH, resized.data, options.x, options.y),
     cols: targetW,
     rows: targetH
   };

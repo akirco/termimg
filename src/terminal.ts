@@ -44,6 +44,7 @@ function queryCellSizeEscape(): Promise<{ cw: number; ch: number } | null> {
 
     const stdin = process.stdin;
     let restoreRaw = false;
+    let resumeOwn = false;
 
     function cleanup() {
       clearTimeout(timeout);
@@ -52,7 +53,9 @@ function queryCellSizeEscape(): Promise<{ cw: number; ch: number } | null> {
           stdin.setRawMode(false);
         }
       } catch {}
-      stdin.pause();
+      if (resumeOwn) {
+        stdin.pause();
+      }
       stdin.removeListener("data", onData);
     }
 
@@ -71,7 +74,10 @@ function queryCellSizeEscape(): Promise<{ cw: number; ch: number } | null> {
         stdin.setRawMode(true);
         restoreRaw = true;
       }
-      stdin.resume();
+      if (stdin.isPaused()) {
+        stdin.resume();
+        resumeOwn = true;
+      }
       stdin.once("data", onData);
       process.stdout.write("\x1b[16t");
     } catch {

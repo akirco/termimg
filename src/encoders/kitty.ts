@@ -50,7 +50,7 @@ export class KittyEncoder {
     }
 
     if (!hasOffset) {
-      parts.push('\r\n');
+      parts.push('\n');
     }
 
     return parts.join('');

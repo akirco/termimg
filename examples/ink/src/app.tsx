@@ -1,7 +1,7 @@
 import type {BoxProps} from 'ink';
-import {Box, Text, useApp, useInput, useWindowSize} from 'ink';
+import {Box, useApp, useInput, useWindowSize} from 'ink';
 import React from 'react';
-import {Image} from './image.tsx';
+import {Image} from './image';
 
 interface FullScreenProps extends BoxProps {
 	children: React.ReactNode;
@@ -41,37 +41,29 @@ export default function App() {
 	return (
 		<FullScreen flexDirection="row" flexWrap="wrap" gap={5} padding={1}>
 			<Box flexDirection="column">
-				<Text color="cyan">ascii (40 cols):</Text>
 				<Image src={src} cols={20} protocol="ascii" />
 			</Box>
 
 			<Box flexDirection="column">
-				<Text color="cyan">braille (40 cols):</Text>
 				<Image src={src} cols={20} protocol="braille" />
 			</Box>
 
 			<Box flexDirection="column">
-				<Text color="cyan">halfblock (40 cols):</Text>
 				<Image src={src} cols={20} protocol="halfblock" />
 			</Box>
 			<Box flexDirection="column">
-				<Text color="cyan">auto (40 cols):</Text>
 				<Image src={src} cols={20} />
 			</Box>
 			<Box flexDirection="column">
-				<Text color="cyan">auto (40 cols):</Text>
 				<Image src={src} cols={20} />
 			</Box>
 			<Box flexDirection="column">
-				<Text color="cyan">auto (40 cols):</Text>
 				<Image src={src} cols={20} />
 			</Box>
 			<Box flexDirection="column">
-				<Text color="cyan">auto (40 cols):</Text>
 				<Image src={src} cols={20} />
 			</Box>
 			<Box flexDirection="column">
-				<Text color="cyan">auto (40 cols):</Text>
 				<Image src={src} cols={20} />
 			</Box>
 		</FullScreen>

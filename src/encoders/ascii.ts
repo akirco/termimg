@@ -40,6 +40,6 @@ export class AsciiEncoder {
       }
     }
 
-    return hasOffset ? lines.join('') : lines.join('\r\n');
+    return hasOffset ? lines.join('') : lines.join('\n');
   }
 }

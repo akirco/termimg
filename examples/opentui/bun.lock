@@ -9,7 +9,6 @@
         "@opentui/react": "^0.4.2",
         "jimp": "^1.6.1",
         "react": "^19.2.7",
-        "termimg": "https://github.com/akirco/termimg",
       },
       "devDependencies": {
         "@types/bun": "^1.3.14",
@@ -185,8 +184,6 @@
     "strip-ansi": ["strip-ansi@7.1.2", "", { "dependencies": { "ansi-regex": "^6.0.1" } }, "sha512-gmBGslpoQJtgnMAvOVqGZpEz9dyoKTCzy2nfz/n8aIFhN/jCE/rCmcxabB6jOOHV+0WNnylOxaxBQPSvcWklhA=="],
 
     "strtok3": ["strtok3@10.3.5", "", { "dependencies": { "@tokenizer/token": "^0.3.0" } }, "sha512-ki4hZQfh5rX0QDLLkOCj+h+CVNkqmp/CMf8v8kZpkNVK6jGQooMytqzLZYUVYIZcFZ6yDB70EfD8POcFXiF5oA=="],
-
-    "termimg": ["termimg@github:akirco/termimg#74d9cae", { "dependencies": { "jimp": "^1.6.1" }, "peerDependencies": { "typescript": "^6.0.3" }, "bin": { "termimg": "src/cli.ts" } }, "akirco-termimg-74d9cae", "sha512-0QO9E2XQMw7iC9tpJl59PX+p9XeGVgosv/kWyAcUZIYXqGD8ghAVZ1bAKZaM+77/eBiW+TVZ/s9edxwSczFR5w=="],
 
     "tinycolor2": ["tinycolor2@1.6.0", "", {}, "sha512-XPaBkWQJdsf3pLKJV9p4qN/S+fm2Oj8AIPo1BTUhg5oxkvm9+SVEGFdhyOz7tTdUTfvxMiAs4sp6/eZO2Ew+pw=="],
 

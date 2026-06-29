@@ -1,4 +1,4 @@
-import type { ImageProtocol } from './types.ts';
+import type { ImageProtocol } from "./types.ts";
 export declare function terminalSize(): {
     cols: number;
     rows: number;

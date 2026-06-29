@@ -4,8 +4,6 @@ import {useEffect, useRef, useState} from 'react';
 import type {ImageProtocol, ImageSource} from '../../../dist/index.js';
 import {detectProtocol, renderImage} from '../../../dist/index.js';
 
-const RE_CUP = /\x1b\[\d+;\d+H/g;
-
 function measureAbsolute(
 	node: DOMElement | null,
 ): {x: number; y: number} | null {
@@ -51,6 +49,20 @@ export function Image({
 	const [err, setError] = useState<string | null>(null);
 	const [text, setText] = useState<string | null>(null);
 	const [ready, setReady] = useState(false);
+	const [graphicalDims, setGraphicalDims] = useState<{
+		cols: number;
+		rows: number;
+	} | null>(null);
+	const streamRef = useRef<string | null>(null);
+
+	// Write graphical stream after Ink renders, so sixel pixels aren't
+	// overwritten by subsequent Ink re-renders.
+	useEffect(() => {
+		if (streamRef.current) {
+			stdout.write(streamRef.current);
+			streamRef.current = null;
+		}
+	});
 
 	useEffect(() => {
 		let cancelled = false;
@@ -63,6 +75,7 @@ export function Image({
 			setReady(false);
 			setText(null);
 			setError(null);
+			setGraphicalDims(null);
 
 			try {
 				const opts: Record<string, unknown> = {
@@ -87,11 +100,11 @@ export function Image({
 				if (cancelled) return;
 
 				if (isGraphical) {
-					setText(null);
+					streamRef.current = result.stream;
+					setGraphicalDims({cols: result.cols, rows: result.rows});
 					setReady(true);
-					stdout.write(result.stream);
 				} else {
-					setText(result.stream.replace(RE_CUP, '\n').replace(/^\n/, ''));
+					setText(result.stream);
 					setReady(true);
 				}
 			} catch (error: unknown) {
@@ -118,6 +131,10 @@ export function Image({
 				<Text color="gray">loading image...</Text>
 			</Box>
 		);
+	}
+
+	if (graphicalDims) {
+		return <Box width={graphicalDims.cols} height={graphicalDims.rows} />;
 	}
 
 	if (text === null) return null;
