@@ -8,18 +8,30 @@ export function MyImageComponent() {
   const [color, setColor] = useState("green");
 
   return (
-    <box flexDirection="row" gap={10} flexWrap="wrap">
-      <termImage src={src} width={20} protocol="ascii" />
-      <termImage src={src} width={20} protocol="braille" />
-      <termImage src={src} width={20} protocol="halfblock" />
+    <box
+      width={"100%"}
+      height={"100%"}
+      flexDirection="row"
+      gap={2}
+      // justifyContent="center"
+      flexWrap="wrap"
+      flexShrink={0}
+      // alignItems="center"
+      padding={0}
+      margin={10}
+    >
       <termImage src={src} width={20} />
-      <box
+      <termImage src={src} width={20} />
+
+      <termImage src={src} width={20} />
+
+      {/* <box
         backgroundColor={color}
         onMouseOver={() => setColor("red")}
         onMouseOut={() => setColor("green")}
       >
         <text>button</text>
-      </box>
+      </box> */}
     </box>
   );
 }

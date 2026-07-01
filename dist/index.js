@@ -34332,6 +34332,23 @@ function alignHeight(h, protocol) {
   }
 }
 
+// src/clear.ts
+async function clearImage(protocol, options) {
+  const { cols, rows, x: x2, y: y2 } = options;
+  if (protocol === "kitty") {
+    return "\x1B_Ga=d,i=1\x1B\\";
+  }
+  if (protocol === "sixel") {
+    const { cw, ch } = await ensureCellSize();
+    const pixelW = cols * cw;
+    const pixelH = rows * ch;
+    const img = `\x1BP0;1;q"1;1;${pixelW};${pixelH}\x1B\\`;
+    const offsetY = y2 !== undefined ? y2 + 1 : 1;
+    const offsetX = x2 !== undefined ? x2 + 1 : 1;
+    return `\x1B[${offsetY};${offsetX}H${img}`;
+  }
+  return "";
+}
 // src/render.ts
 function createEncoder(protocol) {
   switch (protocol) {
@@ -34368,6 +34385,7 @@ export {
   fitDimensions,
   ensureCellSize,
   detectProtocol,
+  clearImage,
   SixelEncoder,
   KittyEncoder,
   HalfBlockEncoder,

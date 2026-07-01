@@ -39,32 +39,38 @@ export default function App() {
 	const src = '../opentui/sample.jpg';
 
 	return (
-		<FullScreen flexDirection="row" flexWrap="wrap" gap={5} padding={1}>
+		<FullScreen
+			flexDirection="row"
+			justifyContent="space-around"
+			flexWrap="wrap"
+			gap={5}
+			padding={1}
+		>
 			<Box flexDirection="column">
-				<Image src={src} cols={20} protocol="ascii" />
+				<Image src={src} width={20} protocol="ascii" />
 			</Box>
 
 			<Box flexDirection="column">
-				<Image src={src} cols={20} protocol="braille" />
+				<Image src={src} width={20} protocol="braille" />
 			</Box>
 
 			<Box flexDirection="column">
-				<Image src={src} cols={20} protocol="halfblock" />
+				<Image src={src} width={20} protocol="halfblock" />
 			</Box>
 			<Box flexDirection="column">
-				<Image src={src} cols={20} />
+				<Image src={src} width={20} />
 			</Box>
 			<Box flexDirection="column">
-				<Image src={src} cols={20} />
+				<Image src={src} width={20} />
 			</Box>
 			<Box flexDirection="column">
-				<Image src={src} cols={20} />
+				<Image src={src} width={20} />
 			</Box>
 			<Box flexDirection="column">
-				<Image src={src} cols={20} />
+				<Image src={src} width={20} />
 			</Box>
 			<Box flexDirection="column">
-				<Image src={src} cols={20} />
+				<Image src={src} width={20} />
 			</Box>
 		</FullScreen>
 	);
