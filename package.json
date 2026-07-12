@@ -37,5 +37,9 @@
 	"dependencies": {
 		"jimp": "^1.6.1"
 	},
+	"repository": {
+		"type": "git",
+		"url": "https://github.com/akirco/termimg.git"
+	},
 	"license": "AGPL-3.0-or-later"
 }
