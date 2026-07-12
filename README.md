@@ -7,9 +7,9 @@
 ## 安装
 
 ```bash
-npm install termimg
+npm install @akirco/termimg
 # or
-bun add termimg
+bun add @akirco/termimg
 ```
 
 ## 使用
@@ -17,7 +17,7 @@ bun add termimg
 ### 基本用法
 
 ```ts
-import { renderImage } from 'termimg'
+import { renderImage } from '@akirco/termimg'
 
 const result = await renderImage('photo.jpg')
 process.stdout.write(result.stream)
@@ -59,7 +59,7 @@ await renderImage('photo.jpg', { x: 10, y: 5 })
 ### 底层 API
 
 ```ts
-import { loadImage, resizeImage, KittyEncoder } from 'termimg'
+import { loadImage, resizeImage, KittyEncoder } from '@akirco/termimg'
 
 const img = await loadImage('photo.jpg')
 const resized = await resizeImage(img, 400, 300)
@@ -71,7 +71,7 @@ process.stdout.write(output)
 ### 清除图片
 
 ```ts
-import { clearImage } from 'termimg'
+import { clearImage } from '@akirco/termimg'
 
 const clear = await clearImage('kitty', { cols: 40, rows: 20 })
 process.stdout.write(clear)
