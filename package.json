@@ -1,5 +1,5 @@
 {
-	"name": "termimg",
+	"name": "@akirco/termimg",
 	"version": "0.1.0",
 	"description": "Terminal image preview library — Kitty, Sixel, HalfBlock, Braille, ASCII",
 	"module": "src/index.ts",
