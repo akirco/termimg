@@ -1,3 +1,4 @@
+#!/usr/bin/env node
 import { isImageExtension } from './image.ts';
 import { renderImage } from './index.ts';
 
